@@ -49,11 +49,7 @@ export class GameUtil {
 
     while (stepsForCheck.length > 0) {
       const checkStep = stepsForCheck.shift() as SolutionStep;
-      // console.log('checkStep');
-      // GameUtil.printEdges(game, checkStep.edges);
       const { isWin, nextSteps } = GameUtil.nextStep(game, stepsSet, checkStep);
-      // console.log('nextSteps', nextSteps);
-      // nextSteps.forEach((step) => GameUtil.printEdges(game, step.edges));
       if (isWin) {
         return { isWin, solution: GameUtil.backwardSolution(nextSteps[0]) };
       }
@@ -135,38 +131,33 @@ export class GameUtil {
             if (!canMove) {
               continue;
             }
-            // console.log('444')
-            // 判断新边是否会造成与其他边重叠或交叠
-            for (const edgeForCompare of edges) {
-              const isCoincideOrCross = GameUtil.isCoincideOrCross(
-                edgeForCompare.pointCoords,
-                newEdgePointCoords
-              );
-              if (isCoincideOrCross) {
-                canMove = false;
-                break;
-              }
-            }
-
-            if (!canMove) {
-              continue;
-            }
-            // console.log('5555')
             for (const rightLenActiveEdgeIndex of activeEdgeIndexesGroupByLen[checkEdgesLen]) {
               const nextEdges = [...edges].map((edge) => ({
                 pointCoords: [...edge.pointCoords],
                 isActive: false,
               }));
               nextEdges.splice(rightLenActiveEdgeIndex, 1);
+              // 判断新边是否会造成与其他边重叠或交叠
+              for (const edgeForCompare of nextEdges) {
+                const isCoincideOrCross = GameUtil.isCoincideOrCross(
+                  edgeForCompare.pointCoords,
+                  newEdgePointCoords
+                );
+                if (isCoincideOrCross) {
+                  canMove = false;
+                  break;
+                }
+              }
+              if (!canMove) {
+                continue;
+              }
               nextEdges.unshift({
                 pointCoords: [...newEdgePointCoords],
                 isActive: false,
               });
               GameUtil.calcEdgesIsActive(nextEdges);
               const hashCode = GameUtil.edgesToHashCode(nextEdges);
-              // console.log('66666', nextEdges)
               if (!stepsSet.has(hashCode)) {
-                // console.log('777')
                 stepsSet.add(hashCode);
                 const nextStep: SolutionStep = {
                   edges: nextEdges,
@@ -382,7 +373,6 @@ export class GameUtil {
    * @param edges
    */
   static printEdges(game: Game, edges: Edge[]) {
-
     // console.table(
     //   edges.map((edge) => ({
     //     isActive: edge.isActive,

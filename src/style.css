@@ -37,3 +37,11 @@ button {
 button:active {
   background: #FFCB00;
 }
+
+.buttons {
+  margin: 8px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}

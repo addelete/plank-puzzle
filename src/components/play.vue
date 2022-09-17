@@ -279,7 +279,6 @@ const onEdgeClick = (index: number, e: KonvaEventObject<MouseEvent>) => {
 };
 
 const onClickBoard = (event: KonvaEventObject<any>) => {
-
   if (!props.allowEdit) return;
   if (handEdgeIndex.value === -1) return;
   const handEdge = props.game.edges[handEdgeIndex.value];

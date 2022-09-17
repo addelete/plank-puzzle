@@ -72,7 +72,6 @@ onBeforeMount(() => {
 // });
 
 const onStep = (edgeIndex: number, edgeEndpointCoords: EdgeEndpointCoords) => {
-  console.log("onStep", edgeIndex, edgeEndpointCoords);
   levelStore.step(edgeIndex, edgeEndpointCoords);
 };
 
@@ -155,20 +154,16 @@ const onRedoClick = () => {
     font-size: 16px;
     color: #fff;
   }
-}
-.buttons {
-  margin-top: 8px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.solution {
-  .content {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+
+  .solution {
+    .content {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
+
 </style>
