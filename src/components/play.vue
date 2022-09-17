@@ -129,6 +129,7 @@ import { computed, onMounted, ref } from "vue";
 import { useThemeStore } from "@src/stores/theme";
 import { Coord, Edge, EdgeEndpointCoords, GameUtil } from "@src/utils/game";
 import { KonvaEventObject } from "konva/lib/Node";
+import { Stage } from "konva/lib/Stage";
 
 const themeStore = useThemeStore();
 
@@ -278,24 +279,27 @@ const onEdgeClick = (index: number, e: KonvaEventObject<MouseEvent>) => {
 };
 
 const onClickBoard = (event: KonvaEventObject<any>) => {
+
   if (!props.allowEdit) return;
   if (handEdgeIndex.value === -1) return;
   const handEdge = props.game.edges[handEdgeIndex.value];
   const handEdgeLen = handEdge.pointCoords.length - 1;
   const gridWidth = themeStore.game.gridWidth;
 
+  const stegeRect = (
+    (event.currentTarget as Stage).content as HTMLDivElement
+  ).getBoundingClientRect();
+
   const offsetX =
-    event.evt.layerX / staticRenderData.value.scale -
+    (event.evt.pageX - stegeRect.x) / staticRenderData.value.scale -
     staticRenderData.value.gridsX;
   const offsetY =
-    event.evt.layerY / staticRenderData.value.scale -
+    (event.evt.pageY - stegeRect.y) / staticRenderData.value.scale -
     staticRenderData.value.gridsY;
-  // console.log(offsetX, offsetY);
   const nearColIndex = Math.round(offsetX / gridWidth);
   const nearRowIndex = Math.round(offsetY / gridWidth);
   const nearX = Math.abs(offsetX - nearColIndex * gridWidth);
   const nearY = Math.abs(offsetY - nearRowIndex * gridWidth);
-  console.log(nearColIndex, nearRowIndex, nearX, nearY);
   const maybeVertical = nearX < themeStore.game.pointRadius;
   const maybeHorizontal = nearY < themeStore.game.pointRadius;
   const edgeEndpointCoordsList: [Coord, Coord][] = [];
