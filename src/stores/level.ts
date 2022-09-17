@@ -54,7 +54,10 @@ export const useLevelStore = defineStore('level', {
         edgesEndpointCoords: [...this.edgesEndpointCoords],
         isWin: this.isWin,
       });
-      this.edgesEndpointCoords[edgeIndex] = newEdgeEndpointCoords;
+      const newEdgesEndpointCoords = [...this.edgesEndpointCoords];
+      newEdgesEndpointCoords.splice(edgeIndex, 1)
+      newEdgesEndpointCoords.unshift(newEdgeEndpointCoords);
+      this.edgesEndpointCoords = newEdgesEndpointCoords;
       const isWin = GameUtil.isWin(this.endCoord, newEdgeEndpointCoords);
       if (isWin) {
         this.isWin = true;
@@ -63,11 +66,9 @@ export const useLevelStore = defineStore('level', {
     },
     reset() {
       const levelData = systemLevels.find((level) => level.id === this.id) as LevelData;
-      console.log('reset', levelData);
       this.init(levelData);
     },
     undo() {
-      console.log('undo', this.undoSteps);
       if (this.undoSteps.length === 0) {
         return;
       }

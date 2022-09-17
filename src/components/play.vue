@@ -290,10 +290,12 @@ const onClickBoard = (event: KonvaEventObject<any>) => {
   const offsetY =
     event.evt.layerY / staticRenderData.value.scale -
     staticRenderData.value.gridsY;
+  // console.log(offsetX, offsetY);
   const nearColIndex = Math.round(offsetX / gridWidth);
   const nearRowIndex = Math.round(offsetY / gridWidth);
   const nearX = Math.abs(offsetX - nearColIndex * gridWidth);
   const nearY = Math.abs(offsetY - nearRowIndex * gridWidth);
+  console.log(nearColIndex, nearRowIndex, nearX, nearY);
   const maybeVertical = nearX < themeStore.game.pointRadius;
   const maybeHorizontal = nearY < themeStore.game.pointRadius;
   const edgeEndpointCoordsList: [Coord, Coord][] = [];
