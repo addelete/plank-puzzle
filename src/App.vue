@@ -63,11 +63,7 @@ const title = "Plank Puzzle";
 const menus = [
   {
     name: "关卡列表",
-    path: "/levels",
-  },
-  {
-    name: "设计关卡",
-    path: "/designer",
+    path: "/",
   },
   {
     name: "关于",

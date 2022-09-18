@@ -1,7 +1,7 @@
 <template>
   <div class="levels">
     <router-link
-      :to="`/?id=${level.id}`"
+      :to="`/level?id=${level.id}`"
       class="item"
       v-for="(level, i) in levels"
       :key="level.id"

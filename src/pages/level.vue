@@ -26,6 +26,7 @@
         ></play>
         <div class="buttons">
           <button @click="onSolutionStepChange(-1)">上一步</button>
+          <span>{{solutionStepIndex}}/{{solution.length-1}}</span>
           <button @click="onSolutionStepChange(1)">下一步</button>
         </div>
       </div>
@@ -35,7 +36,7 @@
 
 <script lang="ts" setup>
 import { EdgeEndpointCoords, GameUtil, SolutionStep } from "@src/utils/game";
-import { ref, watch, onBeforeMount, computed, onMounted } from "vue";
+import { ref, watch, onBeforeMount, computed } from "vue";
 import { useLevelStore } from "@src/stores/level";
 import { LevelData, systemLevels } from "@src/utils/levels";
 import { useRoute, useRouter } from "vue-router";
@@ -58,7 +59,7 @@ onBeforeMount(() => {
 
   if (!id) {
     id = systemLevels[0].id;
-    router.push("/?id=" + id);
+    router.push("/level?id=" + id);
   }
 
   if (id !== levelStore.id) {
@@ -129,7 +130,10 @@ watch(
 );
 
 const onResetClick = () => {
-  levelStore.reset();
+  const c = confirm("确定要重置吗？");
+  if(c) {
+    levelStore.reset();
+  }
 };
 
 const onUndoClick = () => {
