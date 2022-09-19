@@ -1,7 +1,7 @@
 <template>
   <div class="level">
-    <div class="infos" @click="clickName = clickName + 1">
-      <span class="name">{{ levelIndex + 1 }}.{{ levelStore.id }}</span>
+    <div class="infos">
+      <span class="name" @click="clickName = clickName + 1">{{ levelIndex + 1 }}.{{ levelStore.id }}</span>
       <span>步数：{{ levelStore.undoSteps.length }}</span>
     </div>
     <play :game="levelStore" :allowEdit="true" @step="onStep"></play>
