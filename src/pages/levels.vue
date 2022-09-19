@@ -3,6 +3,7 @@
     class="levels"
     :style="{
       width: `${width}px`,
+      gap: `${gap}px`,
     }"
   >
     <router-link
@@ -11,6 +12,8 @@
       v-for="level in levels"
       :key="level.id"
       :style="{
+        width: `${gridWidth}px`,
+        height: `${gridWidth}px`,
         background: `hsla(${
           (540 - Math.round(level.solutionStepsLen / 6) * 30) % 360
         },60%,30%, 1)`,
@@ -30,13 +33,15 @@ import { computed } from "vue";
 import { useThemeStore } from "@src/stores/theme";
 
 const themeStore = useThemeStore();
+const gridWidth = 110;
+const gap = 20;
 
 const levels = systemLevels;
 const width = computed(() => {
   const maxCols = Math.floor(
-    (Math.min(640, themeStore.layout.windowInnerWidth) - 20) / 140
+    Math.min(680, themeStore.layout.windowInnerWidth - 20) / (gridWidth + gap)
   );
-  return maxCols * 140 - 20;
+  return maxCols * (gridWidth + gap) - gap;
 });
 </script>
 
@@ -47,7 +52,6 @@ const width = computed(() => {
   padding: 20px 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
   align-items: center;
 
   .item {
@@ -61,8 +65,7 @@ const width = computed(() => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 120px;
-    height: 120px;
+
     position: relative;
     .id {
       font-size: 36px;
@@ -77,7 +80,7 @@ const width = computed(() => {
       color: #fff;
       padding: 4px 10px;
       border-radius: 4px 4px 0 0;
-      background: #2e3b51;
+      background: #00000045;
     }
   }
 }
