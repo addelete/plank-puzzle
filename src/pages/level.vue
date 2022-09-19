@@ -1,7 +1,8 @@
 <template>
   <div class="level">
-    <div class="name" @click="clickName = clickName + 1">
-      {{ levelStore.id }}
+    <div class="infos" @click="clickName = clickName + 1">
+      <span class="name">{{ levelIndex + 1 }}.{{ levelStore.id }}</span>
+      <span>步数：{{ levelStore.undoSteps.length }}</span>
     </div>
     <play :game="levelStore" :allowEdit="true" @step="onStep"></play>
 
@@ -26,7 +27,7 @@
         ></play>
         <div class="buttons">
           <button @click="onSolutionStepChange(-1)">上一步</button>
-          <span>{{solutionStepIndex}}/{{solution.length-1}}</span>
+          <span>{{ solutionStepIndex }}/{{ solution.length - 1 }}</span>
           <button @click="onSolutionStepChange(1)">下一步</button>
         </div>
       </div>
@@ -36,9 +37,9 @@
 
 <script lang="ts" setup>
 import { EdgeEndpointCoords, GameUtil, SolutionStep } from "@src/utils/game";
-import { ref, watch, onBeforeMount, computed } from "vue";
+import { ref, watch, onBeforeMount, computed, onMounted } from "vue";
 import { useLevelStore } from "@src/stores/level";
-import { LevelData, systemLevels } from "@src/utils/levels";
+import { systemLevels } from "@src/utils/levels";
 import { useRoute, useRouter } from "vue-router";
 import Modal from "@src/components/modal.vue";
 import Play from "@src/components/play.vue";
@@ -53,24 +54,30 @@ const solutionModalOpen = ref(false);
 const solution = ref<SolutionStep[]>([]);
 const solutionStepIndex = ref(0);
 const solutionModalWidth = ref(1);
+const levelIndex = ref(0);
+
+const initLevelById = (id: string) => {
+  if (!id) {
+      id = systemLevels[0].id;
+      router.push("/level?id=" + id);
+    }
+
+    if (id !== levelStore.id) {
+      levelIndex.value = systemLevels.findIndex((level) => level.id === id);
+      levelStore.init(systemLevels[levelIndex.value]);
+    }
+}
 
 onBeforeMount(() => {
-  let id = route.query.id;
+  initLevelById(route.query.id as string);
+})
 
-  if (!id) {
-    id = systemLevels[0].id;
-    router.push("/level?id=" + id);
+watch(
+  () => route.query.id,
+  (id) => {
+    initLevelById(id as string);
   }
-
-  if (id !== levelStore.id) {
-    const level = systemLevels.find((level) => level.id === id) as LevelData;
-    levelStore.init(level);
-  }
-});
-
-// onMounted(() => {
-//   showSolution();
-// });
+);
 
 const onStep = (edgeIndex: number, edgeEndpointCoords: EdgeEndpointCoords) => {
   levelStore.step(edgeIndex, edgeEndpointCoords);
@@ -117,13 +124,22 @@ watch(
   }
 );
 
+
 // 成功之后，弹窗提示
 watch(
   () => levelStore.isWin,
   (isWin) => {
     if (isWin) {
       setTimeout(() => {
-        alert("完成挑战");
+        const nextLevelIndex = levelIndex.value + 1;
+        if (nextLevelIndex < systemLevels.length) {
+          const c = confirm("恭喜过关，是否进入下一关？");
+          if (c) {
+            router.push("/level?id=" + systemLevels[nextLevelIndex].id);
+          }
+        } else {
+          alert("完成挑战, 已经是最后一关了");
+        }
       }, 100);
     }
   }
@@ -131,7 +147,7 @@ watch(
 
 const onResetClick = () => {
   const c = confirm("确定要重置吗？");
-  if(c) {
+  if (c) {
     levelStore.reset();
   }
 };
@@ -153,10 +169,16 @@ const onRedoClick = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  .name {
+  .infos {
     margin: 0 auto;
     font-size: 16px;
     color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 340px;
+    padding: 10px 20px;
   }
 
   .solution {
@@ -169,5 +191,4 @@ const onRedoClick = () => {
     }
   }
 }
-
 </style>
