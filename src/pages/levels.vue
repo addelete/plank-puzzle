@@ -1,32 +1,54 @@
 <template>
-  <div class="levels">
+  <div
+    class="levels"
+    :style="{
+      width: `${width}px`,
+    }"
+  >
     <router-link
       :to="`/level?id=${level.id}`"
       class="item"
-      v-for="(level, i) in levels"
+      v-for="level in levels"
       :key="level.id"
+      :style="{
+        background: `hsla(${
+          (540 - Math.round(level.solutionStepsLen / 6) * 30) % 360
+        },60%,30%, 1)`,
+      }"
     >
-      <div class="sq">{{ i + 1 }}</div>
-      <div class="name">{{ level.id }}</div>
+      <div class="id">{{ level.id }}</div>
+      <div class="difficulty">
+        难度 {{ Math.round(level.solutionStepsLen / 6) }}
+      </div>
     </router-link>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { systemLevels } from "@src/utils/levels";
+import { computed } from "vue";
+import { useThemeStore } from "@src/stores/theme";
+
+const themeStore = useThemeStore();
+
 const levels = systemLevels;
+const width = computed(() => {
+  const maxCols = Math.floor(
+    (Math.min(640, themeStore.layout.windowInnerWidth) - 20) / 140
+  );
+  return maxCols * 140 - 20;
+});
 </script>
 
 <style lang="scss">
 .levels {
-  width: 100%;
-  max-width: 640px;
   margin: 0 auto;
   height: 100%;
-  padding: 20px;
+  padding: 20px 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 20px;
+  align-items: center;
 
   .item {
     background: rgba(255, 255, 255, 0.1);
@@ -36,21 +58,26 @@ const levels = systemLevels;
     color: #fff;
     border-radius: 6px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    width: calc(50% - 5px);
-    .sq {
-      width: 24px;
-      height: 24px;
-      border-radius: 4px;
-      background-color: #666;
-      color: #fff;
-      text-align: center;
-      line-height: 24px;
-      font-size: 16px;
-      margin-right: 5px;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+    position: relative;
+    .id {
+      font-size: 36px;
+      font-weight: bold;
+      opacity: 0.8;
     }
-    .name {
-      font-size: 16px;
+    .difficulty {
+      position: absolute;
+      bottom: 0;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 4px 4px 0 0;
+      background: #2e3b51;
     }
   }
 }

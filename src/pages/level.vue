@@ -1,7 +1,10 @@
 <template>
   <div class="level">
     <div class="infos">
-      <span class="name" @click="clickName = clickName + 1">{{ levelIndex + 1 }}.{{ levelStore.id }}</span>
+      <span class="name" @click="clickName = clickName + 1"
+        >第{{ levelStore.id }}关-难度
+        {{ Math.round(levelStore.solutionStepsLen / 6) }}</span
+      >
       <span>步数：{{ levelStore.undoSteps.length }}</span>
     </div>
     <play :game="levelStore" :allowEdit="true" @step="onStep"></play>
@@ -58,19 +61,19 @@ const levelIndex = ref(0);
 
 const initLevelById = (id: string) => {
   if (!id) {
-      id = systemLevels[0].id;
-      router.push("/level?id=" + id);
-    }
+    id = systemLevels[0].id;
+    router.push("/level?id=" + id);
+  }
 
-    if (id !== levelStore.id) {
-      levelIndex.value = systemLevels.findIndex((level) => level.id === id);
-      levelStore.init(systemLevels[levelIndex.value]);
-    }
-}
+  if (id !== levelStore.id) {
+    levelIndex.value = systemLevels.findIndex((level) => level.id === id);
+    levelStore.init(systemLevels[levelIndex.value]);
+  }
+};
 
 onBeforeMount(() => {
   initLevelById(route.query.id as string);
-})
+});
 
 watch(
   () => route.query.id,
@@ -123,7 +126,6 @@ watch(
     }
   }
 );
-
 
 // 成功之后，弹窗提示
 watch(

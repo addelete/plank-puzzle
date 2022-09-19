@@ -20,6 +20,7 @@ export const useLevelStore = defineStore('level', {
       isWin: false,
       undoSteps: [],
       redoSteps: [],
+      solutionStepsLen: 0,
     } as LevelData & {
       isWin: boolean;
       undoSteps: Step[];
@@ -43,6 +44,7 @@ export const useLevelStore = defineStore('level', {
       this.endY = levelData.endY;
       this.pointCoords = levelData.pointCoords;
       this.edgesEndpointCoords = [...levelData.edgesEndpointCoords];
+      this.solutionStepsLen = levelData.solutionStepsLen;
       this.isWin = false;
       this.undoSteps = [];
       this.redoSteps = [];
