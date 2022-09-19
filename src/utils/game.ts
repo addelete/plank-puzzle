@@ -11,7 +11,6 @@ export type Game = {
   startCoord: Coord;
   endCoord: Coord;
   pointCoords: Coord[];
-  undoSteps: Step[];
   edges: Edge[];
 };
 
@@ -228,10 +227,22 @@ export class GameUtil {
       !GameUtil.isCoordsEqual(samePoints[0], pointsCoords1[pointsCoords1.length - 1]) &&
       !GameUtil.isCoordsEqual(samePoints[0], pointsCoords2[0]) &&
       !GameUtil.isCoordsEqual(samePoints[0], pointsCoords2[pointsCoords2.length - 1])
+      // !GameUtil.isCoordInCoords(pointsCoords1.slice(1, -1), samePoints[0]) &&
+      // !GameUtil.isCoordInCoords(pointsCoords2.slice(1, -1), samePoints[0])
     ) {
       return true;
     }
     return false;
+  }
+
+  /**
+   * 坐标列表是否包含坐标
+   * @param coords 
+   * @param coord 
+   * @returns 
+   */
+  static coordsIncludes(coords: Coord[], coord: Coord) {
+    return coords.some((c) => GameUtil.isCoordsEqual(c, coord));
   }
 
   /**
