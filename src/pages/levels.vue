@@ -21,7 +21,7 @@
     >
       <div class="id">{{ level.id }}</div>
       <div class="difficulty">
-        难度 {{ Math.round(level.solutionStepsLen / 6) }}
+        {{ level.solutionStepsLen }} / {{ complateLevelMap[`${level.id}#${level.solutionStepsLen}`] || "-" }}
       </div>
     </router-link>
   </div>
@@ -31,10 +31,11 @@
 import { systemLevels } from "@src/utils/levels";
 import { computed } from "vue";
 import { useThemeStore } from "@src/stores/theme";
+import { CacheUtils } from "@src/utils/cache";
 
 const themeStore = useThemeStore();
-const gridWidth = 110;
-const gap = 20;
+const gridWidth = 100;
+const gap = 12;
 
 const levels = systemLevels;
 const width = computed(() => {
@@ -43,6 +44,10 @@ const width = computed(() => {
   );
   return maxCols * (gridWidth + gap) - gap;
 });
+const complateLevelMap = CacheUtils.getItem("complateLevels", {}) as Record<
+  string,
+  number
+>;
 </script>
 
 <style lang="scss">
@@ -56,7 +61,6 @@ const width = computed(() => {
 
   .item {
     background: rgba(255, 255, 255, 0.1);
-    margin-bottom: 5px;
     padding: 8px;
     text-align: left;
     color: #fff;

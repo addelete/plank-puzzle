@@ -93,6 +93,17 @@
           ></v-circle>
         </v-layer>
         <v-layer :x="staticRenderData.gridsX" :y="staticRenderData.gridsY">
+          edgesEndpoints
+          <v-circle
+            v-for="(edgesEndpoint, epi) in dynamicRenderData.edgesEndpoints"
+            :key="epi"
+            :x="edgesEndpoint.x"
+            :y="edgesEndpoint.y"
+            :radius="staticRenderData.pointRadius"
+            :fill="themeStore.game.edgeActiveColor"
+            :stroke="staticRenderData.lineColor"
+            :strokeWidth="staticRenderData.lineStrokeWidth"
+          ></v-circle>
           <v-group
             v-for="(edge, ei) in dynamicRenderData.edges"
             :key="ei"
@@ -260,8 +271,28 @@ const dynamicRenderData = computed(() => {
         : themeStore.game.edgeColor,
     };
   });
+  const edgesEndpoints = props.game.edges.reduce((before, edge) => {
+    if (!edge.isActive) return before;
+    const s = new Set<number>();
+    s.add(props.game.startCoord.x * 100 + props.game.startCoord.y);
+    s.add(props.game.endCoord.x * 100 + props.game.endCoord.y);
+    [edge.pointCoords[0], edge.pointCoords[edge.pointCoords.length - 1]]
+      .filter((coord) => {
+        if (s.has(coord.x * 100 + coord.y)) return false;
+        s.add(coord.x * 100 + coord.y);
+        return true;
+      })
+      .forEach((coord) => {
+        before.push({
+          x: coord.x * themeStore.game.gridWidth,
+          y: coord.y * themeStore.game.gridWidth,
+        });
+      });
+    return before;
+  }, [] as { x: number; y: number }[]);
   return {
     edges,
+    edgesEndpoints,
   };
 });
 

@@ -33,7 +33,7 @@ withDefaults(
 );
 
 const emit = defineEmits<{
-  (event: "onClose"): void;
+  (event: "close"): void;
   (event: "width-change", width: number): void;
 }>();
 
@@ -44,7 +44,7 @@ const width = computed(() => {
 });
 
 const close = () => {
-  emit("onClose");
+  emit("close");
 };
 </script>
 
@@ -54,6 +54,7 @@ const close = () => {
   left: 50%;
   top: 100px;
   z-index: 999;
+  
 
   .modal-mask {
     position: fixed;
@@ -68,8 +69,7 @@ const close = () => {
     position: absolute;
     z-index: 1000;
     top: 10px;
-    right: -90px;
-    // margin-left: -15px;
+    right: 10px;
     cursor: pointer;
     width: 30px;
     height: 30px;
@@ -85,21 +85,13 @@ const close = () => {
     position: relative;
     width: 100%;
     height: 100%;
+    max-height: 70vh;
+    overflow-y: auto;
     background: #444;
     border-radius: 12px;
     padding: 20px;
     overflow: auto;
-    left: 100px;
   }
 }
-@media screen and (max-width: 960px) {
-  .modal {
-    .modal-close {
-      right: 10px;
-    }
-    .modal-body {
-      left: 0;
-    }
-  }
-}
+
 </style>

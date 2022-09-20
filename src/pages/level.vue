@@ -2,9 +2,7 @@
   <div class="level">
     <div class="infos">
       <span class="name" @click="clickName = clickName + 1"
-        >第{{ levelStore.id }}关-难度
-        {{ Math.round(levelStore.solutionStepsLen / 6) }}</span
-      >
+        >第{{ levelStore.id }}关（{{levelStore.solutionStepsLen}}步）</span>
       <span>步数：{{ levelStore.undoSteps.length }}</span>
     </div>
     <play :game="levelStore" :allowEdit="true" @step="onStep"></play>
@@ -17,7 +15,7 @@
   </div>
   <modal
     :open="solutionModalOpen"
-    @onClose="solutionModalOpen = false"
+    @close="solutionModalOpen = false"
     @width-change="onSolutionModalWidthChange"
   >
     <div class="solution">
@@ -165,7 +163,7 @@ const onRedoClick = () => {
 
 <style lang="scss">
 .level {
-  margin: auto 0;
+  padding-top: 50px;
   height: 100%;
   display: flex;
   flex-direction: column;

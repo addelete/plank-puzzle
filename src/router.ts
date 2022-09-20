@@ -4,8 +4,9 @@ import Level from './pages/level.vue';
 import About from './pages/about.vue';
 
 const routes = [
+  { path: '/',  redirect: '/levels' }, 
   { path: '/level', component: Level }, 
-  { path: '/', component: Levels }, 
+  { path: '/levels', component: Levels }, 
   { path: '/about', component: About }, 
 ];
 

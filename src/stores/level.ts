@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { Edge, GameUtil, Coord, EdgeEndpointCoords } from '@src/utils/game';
 import { LevelData, systemLevels } from '@src/utils/levels';
+import { CacheUtils } from '@src/utils/cache';
 
 export type Step = {
   edgesEndpointCoords: [Coord, Coord][];
@@ -57,12 +58,18 @@ export const useLevelStore = defineStore('level', {
         isWin: this.isWin,
       });
       const newEdgesEndpointCoords = [...this.edgesEndpointCoords];
-      newEdgesEndpointCoords.splice(edgeIndex, 1)
+      newEdgesEndpointCoords.splice(edgeIndex, 1);
       newEdgesEndpointCoords.unshift(newEdgeEndpointCoords);
       this.edgesEndpointCoords = newEdgesEndpointCoords;
       const isWin = GameUtil.isWin(this.endCoord, newEdgeEndpointCoords);
       if (isWin) {
         this.isWin = true;
+        const complateLevelMap = CacheUtils.getItem('complateLevels', {}) as Record<string, number>;
+        const key = `${this.id}#${this.solutionStepsLen}`;
+        if (!complateLevelMap[key] || complateLevelMap[key] > this.undoSteps.length) {
+          complateLevelMap[key] = this.undoSteps.length;
+          CacheUtils.setItem('complateLevels', complateLevelMap);
+        }
       }
       this.redoSteps = [];
     },
