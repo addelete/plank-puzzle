@@ -28,8 +28,6 @@ export const useLevelStore = defineStore('level', {
       redoSteps: Step[];
     }),
   getters: {
-    startPoint: (state) => state.colsLen * state.rowsLen,
-    endPoint: (state) => state.colsLen * state.rowsLen + 1,
     startCoord: (state) => ({ x: -1, y: state.startY }),
     endCoord: (state) => ({ x: state.colsLen, y: state.endY }),
     edges(): Edge[] {

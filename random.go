@@ -244,7 +244,6 @@ func (game *Game) toString() string {
 			return game.isPointLess(edge.Points[i], edge.Points[j])
 		})
 	}
-	//startPoint := game.pos2Point(game.StartPos)
 	sort.Slice(game.Edges, func(i, j int) bool {
 		edgesI := game.Edges[i]
 		edgesJ := game.Edges[j]

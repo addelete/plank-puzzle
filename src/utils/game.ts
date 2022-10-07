@@ -6,8 +6,6 @@ export type Coord = {
 export type Game = {
   colsLen: number;
   rowsLen: number;
-  startPoint: number;
-  endPoint: number;
   startCoord: Coord;
   endCoord: Coord;
   pointCoords: Coord[];
@@ -37,24 +35,27 @@ export class GameUtil {
    * @returns
    */
   static solve(game: Game) {
+    
     const stepsForCheck: SolutionStep[] = [
       {
         edges: [...game.edges],
         prevStep: null,
       },
     ];
+    let checkTimes = 1;
     const stepsSet = new Set<string>();
     stepsSet.add(GameUtil.edgesToHashCode(game.edges));
 
     while (stepsForCheck.length > 0) {
+      checkTimes++;
       const checkStep = stepsForCheck.shift() as SolutionStep;
       const { isWin, nextSteps } = GameUtil.nextStep(game, stepsSet, checkStep);
       if (isWin) {
-        return { isWin, solution: GameUtil.backwardSolution(nextSteps[0]) };
+        return { isWin, solution: GameUtil.backwardSolution(nextSteps[0]), checkTimes };
       }
       stepsForCheck.push(...nextSteps);
     }
-    return { isWin: false, solution: [] };
+    return { isWin: false, solution: [], checkTimes };
   }
   /**
    * 从最后一步，向前推导出解

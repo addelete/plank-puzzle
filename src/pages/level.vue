@@ -86,6 +86,7 @@ const onStep = (edgeIndex: number, edgeEndpointCoords: EdgeEndpointCoords) => {
 
 const showSolution = () => {
   const res = GameUtil.solve(levelStore);
+  console.log(res);
   if (res.isWin) {
     solutionStepIndex.value = 0;
     solution.value = res.solution;
