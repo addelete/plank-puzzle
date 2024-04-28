@@ -24,7 +24,6 @@ export default defineConfig({
       {
         // vue: 'Vue',
         konva: 'Konva',
-        'agora-rtm-sdk': 'AgoraRTM',
       },
       { disableInServe: true }
     ),

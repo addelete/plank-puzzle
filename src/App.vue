@@ -64,6 +64,7 @@ const goList = () => {
   cursor: pointer;
   font-size: 24px;
   opacity: 0.8;
+
   .icon {
     display: block;
     width: 1em;
@@ -84,34 +85,41 @@ const goList = () => {
     flex-direction: column;
     align-items: center;
     font-family: "Noto Sans SC", sans-serif;
+
     .close {
       display: none;
     }
+
     .logo {
       margin-top: 50px;
       display: flex;
       flex-direction: column;
       align-items: center;
+
       .image {
         display: block;
         width: 96px;
         height: 96px;
       }
+
       .title {
         font-size: 18px;
         font-weight: bold;
         color: #d8e7ff;
       }
     }
+
     .menus {
       margin-top: 40px;
       display: flex;
       flex-direction: column;
       align-items: center;
+
       .menu {
         margin-bottom: 20px;
       }
     }
+
     .prod-info {
       margin-top: auto;
       margin-bottom: 30px;
@@ -120,6 +128,7 @@ const goList = () => {
       align-items: center;
       font-size: 12px;
       color: #aaa;
+
       .version {
         font-size: 16px;
         font-weight: bold;
@@ -127,11 +136,13 @@ const goList = () => {
       }
     }
   }
+
   .main {
     display: flex;
     flex-direction: column;
     padding-top: 60px;
     max-height: 100vh;
+
     .header {
       position: fixed;
       z-index: 999;
@@ -152,6 +163,7 @@ const goList = () => {
         margin: 0 auto;
         padding: 0 8px;
       }
+
       .title {
         position: absolute;
         left: 50%;
@@ -159,12 +171,23 @@ const goList = () => {
         font-size: large;
       }
     }
+
     .body {
       flex: 1;
       height: 100%;
       display: flex;
       flex-direction: column;
       overflow: scroll;
+      scrollbar-width: none;
+      /* Firefox */
+      -ms-overflow-style: none;
+
+      /* IE 10+ */
+      &::-webkit-scrollbar {
+        display: none;
+        /* Chrome Safari */
+      }
+
     }
   }
 }
