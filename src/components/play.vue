@@ -93,7 +93,6 @@
           ></v-circle>
         </v-layer>
         <v-layer :x="staticRenderData.gridsX" :y="staticRenderData.gridsY">
-          edgesEndpoints
           <v-circle
             v-for="(edgesEndpoint, epi) in dynamicRenderData.edgesEndpoints"
             :key="epi"

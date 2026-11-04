@@ -2,7 +2,15 @@
   <div class="level">
     <div class="infos">
       <span class="name" @click="clickName = clickName + 1"
-        >第{{ levelStore.id }}关（{{levelStore.solutionStepsLen}}步）</span>
+        >第{{ levelStore.id }}关（{{levelStore.solutionStepsLen}}步 · 难度<span
+          v-if="levelDifficulty[levelStore.id]"
+          :style="{ color: tierColors[levelDifficulty[levelStore.id].tier], fontWeight: 'bold' }"
+          >{{
+            levelDifficulty[levelStore.id].tier
+          }}
+          {{ levelDifficulty[levelStore.id].score.toFixed(1) }}</span
+        >）</span
+      >
       <span>步数：{{ levelStore.undoSteps.length }}</span>
     </div>
     <play :game="levelStore" :allowEdit="true" @step="onStep"></play>
@@ -41,6 +49,7 @@ import { EdgeEndpointCoords, GameUtil, SolutionStep } from "@src/utils/game";
 import { ref, watch, onBeforeMount, computed, onMounted } from "vue";
 import { useLevelStore } from "@src/stores/level";
 import { systemLevels } from "@src/utils/levels";
+import { levelDifficulty, tierColors } from "@src/utils/difficulty";
 import { useRoute, useRouter } from "vue-router";
 import Modal from "@src/components/modal.vue";
 import Play from "@src/components/play.vue";

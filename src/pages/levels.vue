@@ -14,14 +14,15 @@
       :style="{
         width: `${gridWidth}px`,
         height: `${gridWidth}px`,
-        background: `hsla(${
-          (540 - Math.round(level.solutionStepsLen / 6) * 30) % 360
-        },60%,30%, 1)`,
+        background: tierBgColors[levelDifficulty[level.id]?.tier ?? '中等'],
       }"
+      :title="`难度 ${(levelDifficulty[level.id]?.score ?? 0).toFixed(1)} / 100`"
     >
       <div class="id">{{ level.id }}</div>
       <div class="difficulty">
-        {{ level.solutionStepsLen }} / {{ complateLevelMap[`${level.id}#${level.solutionStepsLen}`] || "-" }}
+        {{
+          level.solutionStepsLen
+        }}/{{ complateLevelMap[`${level.id}#${level.solutionStepsLen}`] || "-" }}
       </div>
     </router-link>
   </div>
@@ -29,7 +30,16 @@
 
 <script lang="ts" setup>
 import { systemLevels } from "@src/utils/levels";
+import { levelDifficulty, DifficultyTier } from "@src/utils/difficulty";
 import { computed } from "vue";
+
+// 难度档位底色（不显示文字，仅用颜色区分）
+const tierBgColors: Record<DifficultyTier, string> = {
+  简单: "hsla(122, 45%, 30%, 1)",
+  中等: "hsla(210, 55%, 32%, 1)",
+  困难: "hsla(35, 80%, 32%, 1)",
+  极难: "hsla(4, 65%, 34%, 1)",
+};
 import { useThemeStore } from "@src/stores/theme";
 import { CacheUtils } from "@src/utils/cache";
 
