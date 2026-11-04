@@ -402,6 +402,8 @@ func (game *Game) nextSteps(step Step) (bool, []Step) {
 						for _, rightLenActiveEdgeIndex := range activeEdgeIndexesGroupByLen[activeEdgesLen] {
 							nextEdges := make([]Edge, len(edges))
 							copy(nextEdges, edges)
+							// 每个候选边独立判断是否冲突，不能复用外层 canMove
+							canPlace := true
 							for efci, edgeForCopy := range edges {
 								if efci == rightLenActiveEdgeIndex {
 									nextEdges[efci] = Edge{
@@ -412,7 +414,7 @@ func (game *Game) nextSteps(step Step) (bool, []Step) {
 
 									isCoincideOrCross := game.isCoincideOrCross(nextEdges[efci].Points, pointList)
 									if isCoincideOrCross {
-										canMove = false
+										canPlace = false
 										break
 									}
 									nextEdges[efci] = Edge{
@@ -421,7 +423,7 @@ func (game *Game) nextSteps(step Step) (bool, []Step) {
 									}
 								}
 							}
-							if !canMove {
+							if !canPlace {
 								continue
 							}
 							game.calcEdgesIsActive(&nextEdges, rightLenActiveEdgeIndex)

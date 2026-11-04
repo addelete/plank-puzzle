@@ -138,17 +138,19 @@ export class GameUtil {
               }));
               nextEdges.splice(rightLenActiveEdgeIndex, 1);
               // 判断新边是否会造成与其他边重叠或交叠
+              // 注意：每个候选边独立判断，不能复用外层 canMove（换一块同长边拿走可能就不冲突了）
+              let canPlace = true;
               for (const edgeForCompare of nextEdges) {
                 const isCoincideOrCross = GameUtil.isCoincideOrCross(
                   edgeForCompare.pointCoords,
                   newEdgePointCoords
                 );
                 if (isCoincideOrCross) {
-                  canMove = false;
+                  canPlace = false;
                   break;
                 }
               }
-              if (!canMove) {
+              if (!canPlace) {
                 continue;
               }
               nextEdges.unshift({
