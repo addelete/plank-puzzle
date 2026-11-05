@@ -1,0 +1,39 @@
+{
+  "level": 2,
+  "rowsLen": 6,
+  "colsLen": 6,
+  "startY": 0,
+  "endY": 2,
+  "solutionStepsLen": 7,
+  "points": [[2,0],[5,0],[1,1],[4,1],[0,2],[2,2],[3,2],[2,3],[4,3],[1,4],[5,4],[0,5]],
+  "stats": {"nodes": 9, "links": 15, "winNodes": 1, "minWinDepth": 7, "maxDepth": 7, "matchesExpected": true},
+  "difficulty": {"score": 44.50, "shortestSolutions": 1, "bottleneck": 1.0000, "corridor": 1.0000, "offPathFrac": 0.1111, "meanBranching": 1.875},
+  "nodes": [
+    {"id": 0, "depth": 0, "isStart": true, "isWin": false, "activeEdges": 1, "edges": ["(-1,0)-(2,0)*","(0,2)-(0,5)","(1,1)-(1,4)","(2,2)-(2,3)","(4,1)-(4,3)","(5,0)-(5,4)"]},
+    {"id": 1, "depth": 1, "isStart": false, "isWin": false, "activeEdges": 2, "edges": ["(0,2)-(0,5)","(1,1)-(1,4)","(2,0)-(5,0)*","(2,2)-(2,3)","(4,1)-(4,3)","(5,0)-(5,4)*"]},
+    {"id": 2, "depth": 2, "isStart": false, "isWin": false, "activeEdges": 2, "edges": ["(0,2)-(0,5)","(1,1)-(1,4)*","(1,4)-(5,4)*","(2,0)-(5,0)","(2,2)-(2,3)","(4,1)-(4,3)"]},
+    {"id": 3, "depth": 3, "isStart": false, "isWin": false, "activeEdges": 2, "edges": ["(0,2)-(0,5)","(1,1)-(4,1)*","(1,4)-(5,4)","(2,0)-(5,0)","(2,2)-(2,3)","(4,1)-(4,3)*"]},
+    {"id": 4, "depth": 4, "isStart": false, "isWin": false, "activeEdges": 2, "edges": ["(0,2)-(0,5)","(1,1)-(4,1)","(1,4)-(5,4)","(2,0)-(5,0)","(2,2)-(2,3)*","(2,3)-(4,3)*"]},
+    {"id": 5, "depth": 5, "isStart": false, "isWin": false, "activeEdges": 1, "edges": ["(0,2)-(0,5)","(1,1)-(4,1)","(1,4)-(5,4)","(2,0)-(5,0)","(2,2)-(3,2)*","(2,3)-(4,3)"]},
+    {"id": 6, "depth": 5, "isStart": false, "isWin": false, "activeEdges": 3, "edges": ["(0,2)-(0,5)*","(0,2)-(2,2)*","(1,1)-(4,1)","(1,4)-(5,4)","(2,0)-(5,0)","(2,2)-(2,3)*"]},
+    {"id": 7, "depth": 6, "isStart": false, "isWin": false, "activeEdges": 3, "edges": ["(0,2)-(0,5)*","(0,2)-(2,2)*","(1,1)-(4,1)","(1,4)-(5,4)","(2,0)-(5,0)","(2,2)-(3,2)*"]},
+    {"id": 8, "depth": 7, "isStart": false, "isWin": true, "activeEdges": 3, "edges": ["(0,2)-(2,2)*","(1,1)-(4,1)","(1,4)-(5,4)","(2,0)-(5,0)","(2,2)-(3,2)*","(3,2)-(6,2)*"]}
+  ],
+  "links": [
+    {"source": 0, "target": 1, "move": "(-1,0)-(2,0)->(2,0)-(5,0)"},
+    {"source": 1, "target": 0, "move": "(2,0)-(5,0)->(-1,0)-(2,0)"},
+    {"source": 1, "target": 2, "move": "(5,0)-(5,4)->(1,4)-(5,4)"},
+    {"source": 2, "target": 3, "move": "(1,1)-(1,4)->(1,1)-(4,1)"},
+    {"source": 2, "target": 1, "move": "(1,4)-(5,4)->(5,0)-(5,4)"},
+    {"source": 3, "target": 4, "move": "(4,1)-(4,3)->(2,3)-(4,3)"},
+    {"source": 3, "target": 2, "move": "(1,1)-(4,1)->(1,1)-(1,4)"},
+    {"source": 4, "target": 5, "move": "(2,2)-(2,3)->(2,2)-(3,2)"},
+    {"source": 4, "target": 6, "move": "(2,3)-(4,3)->(0,2)-(2,2)"},
+    {"source": 4, "target": 3, "move": "(2,3)-(4,3)->(4,1)-(4,3)"},
+    {"source": 5, "target": 4, "move": "(2,2)-(3,2)->(2,2)-(2,3)"},
+    {"source": 6, "target": 4, "move": "(0,2)-(2,2)->(2,3)-(4,3)"},
+    {"source": 6, "target": 7, "move": "(2,2)-(2,3)->(2,2)-(3,2)"},
+    {"source": 7, "target": 8, "move": "(0,2)-(0,5)->(3,2)-(6,2)"},
+    {"source": 7, "target": 6, "move": "(2,2)-(3,2)->(2,2)-(2,3)"}
+  ]
+}

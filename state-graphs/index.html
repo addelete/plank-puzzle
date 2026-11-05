@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>plank-puzzle 关卡状态图浏览器</title>
+<style>
+  html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; }
+  #panel {
+    position: fixed; top: 12px; left: 12px; z-index: 10;
+    background: rgba(20,24,33,.88); color: #dde3ee; padding: 12px 14px;
+    border-radius: 10px; font-size: 13px; max-width: 340px; line-height: 1.6;
+  }
+  #panel h1 { font-size: 14px; margin: 0 0 6px; }
+  #panel select, #panel button {
+    background: #2b3446; color: #dde3ee; border: 1px solid #45506a;
+    border-radius: 6px; padding: 3px 8px; font-size: 13px; cursor: pointer;
+  }
+  #stats { margin-top: 6px; font-size: 12px; color: #9fb0cc; }
+  .legend { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+  .legend-item { cursor: pointer; margin-right: 10px; user-select: none; }
+  .legend-item:hover { text-decoration: underline; }
+  .legend-item.off { cursor: default; }
+  .legend-item.off:hover { text-decoration: none; }
+</style>
+<script src="https://unpkg.com/3d-force-graph"></script>
+</head>
+<body>
+<div id="graph"></div>
+<div id="panel">
+  <h1>plank-puzzle · 关卡状态图</h1>
+  关卡：
+  <select id="levelSel"></select>
+  <div id="stats"></div>
+  <div style="margin-top:6px;font-size:12px;">
+    <span class="legend-item" id="lgStart"><span class="legend" style="background:#4caf50"></span>初始</span>
+    <span class="legend-item" id="lgWin"><span class="legend" style="background:#f44336"></span>获胜</span>
+    <span class="legend-item off"><span class="legend" style="background:#3b82f6"></span>普通</span>
+    <span class="legend-item" id="lgPath"><span class="legend" style="background:#ffca28"></span>最短</span>
+  </div>
+</div>
+<script>
+const N_LEVELS = 118;
+const sel = document.getElementById('levelSel');
+const statsEl = document.getElementById('stats');
+for (let i = 1; i <= N_LEVELS; i++) {
+  const o = document.createElement('option');
+  o.value = i; o.textContent = '第 ' + i + ' 关';
+  sel.appendChild(o);
+}
+let graph = null, curData = null, curMeta = null;
+
+/** 悬停卡片：在鼠标旁渲染该局面的棋盘（木板/桩/起终点） */
+function stateCard(n) {
+  const meta = curMeta;
+  const card = document.createElement('div');
+  card.style.cssText =
+    'background:rgba(16,20,28,.96);border:1px solid #45506a;border-radius:10px;' +
+    'padding:8px 10px;color:#dde3ee;font-size:12px;line-height:1.5;box-shadow:0 4px 16px rgba(0,0,0,.5);';
+  const head = document.createElement('div');
+  head.style.marginBottom = '6px';
+  head.innerHTML = `局面 #${n.id} · 第 ${n.depth} 步 · 激活 ${n.activeEdges} 块` +
+    (n.isWin ? ' · <b style="color:#ff5252">获胜</b>' : '') +
+    (n.isStart ? ' · <b style="color:#69f0ae">初始</b>' : '');
+  card.appendChild(head);
+
+  const S = 22, P = 16;                       // 单元格边距
+  const cols = meta.colsLen + 2, rows = meta.rowsLen;  // x: -1(起点岸) .. colsLen(终点岸)
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const W = cols * S + 2 * P, H = rows * S + 2 * P;
+  const cv = document.createElement('canvas');
+  cv.width = W * dpr; cv.height = H * dpr;
+  cv.style.cssText = `width:${W}px;height:${H}px;display:block;`;
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const fx = x => P + (x + 1) * S + S / 2;   // 格点中心
+  const fy = y => P + y * S + S / 2;
+
+  // 棋盘背景与网格（x: 0..colsLen-1, y: 0..rowsLen-1）
+  ctx.fillStyle = '#151b28';
+  ctx.fillRect(fx(0) - S / 2, fy(0) - S / 2, meta.colsLen * S, meta.rowsLen * S);
+  ctx.strokeStyle = 'rgba(160,180,210,0.16)';
+  ctx.lineWidth = 1;
+  for (let gx = 0; gx < meta.colsLen; gx++) {
+    ctx.beginPath();
+    ctx.moveTo(fx(gx), fy(0));
+    ctx.lineTo(fx(gx), fy(meta.rowsLen - 1));
+    ctx.stroke();
+  }
+  for (let gy = 0; gy < meta.rowsLen; gy++) {
+    ctx.beginPath();
+    ctx.moveTo(fx(0), fy(gy));
+    ctx.lineTo(fx(meta.colsLen - 1), fy(gy));
+    ctx.stroke();
+  }
+
+  // 木板（画在桩点下层）
+  ctx.lineCap = 'round';
+  for (const e of n.edges) {
+    const m = e.match(/\((-?\d+),(-?\d+)\)-\((-?\d+),(-?\d+)\)(\*)?$/);
+    if (!m) continue;
+    const act = m[5] === '*';
+    ctx.strokeStyle = act ? '#ffa726' : '#5d6d8c';
+    ctx.lineWidth = act ? 6 : 4;
+    ctx.beginPath();
+    ctx.moveTo(fx(+m[1]), fy(+m[2]));
+    ctx.lineTo(fx(+m[3]), fy(+m[4]));
+    ctx.stroke();
+  }
+  // 桩点
+  ctx.fillStyle = '#aab6cc';
+  for (const [x, y] of meta.points) {
+    ctx.beginPath(); ctx.arc(fx(x), fy(y), 3.2, 0, Math.PI * 2); ctx.fill();
+  }
+  // 起点岸 / 终点岸
+  ctx.fillStyle = '#4caf50';
+  ctx.beginPath(); ctx.arc(fx(-1), fy(meta.startY), 4.5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#f44336';
+  ctx.beginPath(); ctx.arc(fx(meta.colsLen), fy(meta.endY), 4.5, 0, Math.PI * 2); ctx.fill();
+  card.appendChild(cv);
+
+  return card;
+}
+
+function defaultNodeColor(n) {
+  return n.isStart ? '#4caf50' : n.isWin ? '#f44336' : '#3b82f6';
+}
+/** 常亮配色：最短解路径金色加粗，初始绿、获胜红、普通蓝 */
+function applyColors() {
+  if (!graph || !curData || !curMeta) return;
+  const onPath = shortestPathIds() || new Set();
+  const nodeById = new Map(curMeta.nodes.map(n => [n.id, n]));
+  // 库绑定数据后会把 link.source/target 从 id 改写成节点对象引用，
+  // refresh() 重新求值时会以对象形式传入，这里两种都要兼容
+  const idOf = v => (v && typeof v === 'object') ? v.id : v;
+  const onPathLink = l => {
+    const s = idOf(l.source), t = idOf(l.target);
+    return onPath.has(s) && onPath.has(t) &&
+      nodeById.get(s) && nodeById.get(t) &&
+      Math.abs(nodeById.get(s).depth - nodeById.get(t).depth) === 1;
+  };
+  graph
+    .nodeColor(n =>
+      n.isStart ? '#4caf50' :                       // 初始局面保持绿色
+      onPath.has(n.id) ? (n.isWin ? '#ff1744' : '#ffca28') :
+      defaultNodeColor(n))
+    .linkColor(l => onPathLink(l) ? '#ffca28' : 'rgba(140,160,200,0.5)')
+    .linkWidth(l => onPathLink(l) ? 2.5 : 0);
+}
+
+function loadLevel(i) {
+  fetch(`level-${String(i).padStart(3, '0')}.json`).then(r => r.json()).then(data => {
+    curMeta = data;
+    const { nodes, links, stats } = data;
+    const deg = {};
+    links.forEach(l => { deg[l.source] = (deg[l.source] || 0) + 1; deg[l.target] = (deg[l.target] || 0) + 1; });
+    nodes.forEach(n => { n.val = 1 + (deg[n.id] || 0) * 0.35; n.__baseVal = n.val; });
+    curData = { nodes, links };
+    statsEl.innerHTML = `局面 ${stats.nodes} · 移动 ${stats.links} · 终局 ${stats.winNodes}` +
+      ` · 最短 ${stats.minWinDepth} 步 · 难度 ${data.difficulty.score.toFixed(1)}`
+    if (!graph) {
+      if (typeof ForceGraph3D !== 'function') throw new Error('3d-force-graph 库未加载（需要联网或本地引入）');
+      graph = ForceGraph3D()(document.getElementById('graph'))
+        .nodeLabel(stateCard)  // 支持 HTMLElement，库会自动定位在鼠标旁
+        .linkOpacity(0.35)
+        .onNodeClick(n => { if (graph) graph.centerAt(n.x, n.y, n.z, 800); });
+      window.__graph = graph; // 调试用
+    }
+    graph.graphData({ nodes: [...nodes], links: [...links.map(l => ({ ...l }))] });
+    applyColors();                           // 最短解常亮
+  }).catch(e => { statsEl.textContent = '加载失败：' + e + '（请通过本地 HTTP 服务打开，例如 npx serve）'; });
+}
+
+sel.onchange = () => loadLevel(+sel.value);
+
+/** 从初始局面 BFS 到最近获胜终局，返回路径上的节点 id 集合 */
+function shortestPathIds() {
+  if (!curData || !curMeta) return null;
+  const { nodes, links } = curMeta;
+  const adj = new Map();
+  nodes.forEach(n => adj.set(n.id, []));
+  links.forEach(l => { adj.get(l.source).push(l.target); adj.get(l.target).push(l.source); });
+  const prev = new Map([[nodes[0].id, null]]);
+  const q = [nodes[0].id];
+  let winId = null;
+  while (q.length) {
+    const u = q.shift();
+    if (nodes[u].isWin) { winId = u; break; }
+    for (const v of adj.get(u)) if (!prev.has(v)) { prev.set(v, u); q.push(v); }
+  }
+  if (winId === null) return null;
+  const onPath = new Set();
+  for (let u = winId; u !== null; u = prev.get(u)) onPath.add(u);
+  return onPath;
+}
+
+/** 把匹配的节点放大一会儿再恢复，方便在图中定位 */
+function pulseNodes(matchFn, scale = 8, duration = 1600) {
+  if (!graph || !curData) return;
+  let hit = 0;
+  curData.nodes.forEach(n => {
+    if (!matchFn(n)) return;
+    if (n.__pulseT) { clearTimeout(n.__pulseT); n.__pulseT = null; }
+    n.val = (n.__baseVal ?? n.val) * scale;   // 以基准大小放大，连点不会叠加
+    hit++;
+    n.__pulseT = setTimeout(() => {
+      n.val = n.__baseVal ?? 1;
+      n.__pulseT = null;
+      graph.refresh();
+    }, duration);
+  });
+  if (hit) graph.refresh();
+}
+// 图例点击定位：初始 / 获胜 / 最短；普通不响应
+document.getElementById('lgStart').onclick = () => pulseNodes(n => n.isStart);
+document.getElementById('lgWin').onclick = () => pulseNodes(n => n.isWin);
+document.getElementById('lgPath').onclick = () => {
+  const onPath = shortestPathIds();
+  if (onPath) pulseNodes(n => onPath.has(n.id));
+};
+
+sel.value = '1';
+loadLevel(1);
+</script>
+</body>
+</html>
